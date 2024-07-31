@@ -1,46 +1,102 @@
-// app/components/WeatherFetcher.tsx
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import WeatherWidget from "./WeatherWidget";
+import { fetchCoords, fetchWeather } from "../utils/fetchers";
 
 interface WeatherFetcherProps {
-	city?: string;
+	city: string;
 }
 
-async function fetchWeather(city: string) {
-	const response = await fetch(
-		`${
-			process.env.NEXT_PUBLIC_API_BASE_URL
-		}/api/direct-geocode?city=${encodeURIComponent(city)}`
-	);
-	if (!response.ok) {
-		throw new Error("Failed to fetch coordinates");
-	}
-	const coordsData = await response.json();
-	if (coordsData.length === 0) {
-		throw new Error("No coordinates found");
-	}
+export default function WeatherFetcher({ city }: WeatherFetcherProps) {
+	const [weatherData, setWeatherData] = useState<any>(null);
+	const [error, setError] = useState<string | null>(null);
 
-	const { lat, lon } = coordsData[0];
-	const weatherResponse = await fetch(
-		`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/weather?lat=${lat}&lon=${lon}`
-	);
-	if (!weatherResponse.ok) {
-		throw new Error("Failed to fetch weather data");
-	}
-	return await weatherResponse.json();
-}
+	useEffect(() => {
+		async function fetchWeatherData() {
+			try {
+				const coordsData = await fetchCoords(city || "berlin");
+				if (!coordsData || coordsData.length === 0) {
+					throw new Error("No coordinates found");
+				}
+				const { lat, lon } = coordsData[0];
+				const weatherData = await fetchWeather(lat, lon);
+				setWeatherData(weatherData);
+			} catch (error) {
+				if (error instanceof Error) {
+					setError(error.message);
+				} else {
+					setError("An unknown error occurred");
+				}
+			}
+		}
 
-export default async function WeatherFetcher({
-	city = "berlin",
-}: WeatherFetcherProps) {
-	try {
-		const weatherData = await fetchWeather(city);
-		return <WeatherWidget city={city} weatherData={weatherData} />;
-	} catch (error) {
+		fetchWeatherData();
+	}, [city]);
+
+	if (error) {
 		return (
 			<div className="bg-red-200 p-4 rounded-lg shadow-md">
-				<p className="text-lg">{(error as Error).message}</p>
+				<p className="text-lg">{error}</p>
 			</div>
 		);
 	}
+
+	if (!weatherData) {
+		return <p>Loading...</p>;
+	}
+
+	return <WeatherWidget city={city} weatherData={weatherData} />;
 }
+
+// app/components/WeatherFetcher.tsx
+
+// 'use client';
+
+// import React, { useEffect, useState } from "react";
+// import WeatherWidget from "./WeatherWidget";
+// import { fetchWeatherForGeolocation } from "../utils/fetchers";
+
+// interface WeatherFetcherProps {
+//   city?: string;
+// }
+
+// export default function WeatherFetcher({ city }: WeatherFetcherProps) {
+//   const [weatherData, setWeatherData] = useState<any>(null);
+//   const [error, setError] = useState<string | null>(null);
+
+//   useEffect(() => {
+//     const fetchWeatherData = async () => {
+//       try {
+//         const data = city ? await fetchCoords(city) : await fetchWeatherForGeolocation();
+//         if (!data || (Array.isArray(data) && data.length === 0)) {
+//           throw new Error('No data found');
+//         }
+//         const weather = city ? await fetchWeather(data[0].lat, data[0].lon) : data;
+//         setWeatherData(weather);
+//       } catch (error) {
+//         if (error instanceof Error) {
+//           setError(error.message);
+//         } else {
+//           setError('An unknown error occurred');
+//         }
+//       }
+//     };
+
+//     fetchWeatherData();
+//   }, [city]);
+
+//   if (error) {
+//     return (
+//       <div className="bg-red-200 p-4 rounded-lg shadow-md">
+//         <p className="text-lg">{error}</p>
+//       </div>
+//     );
+//   }
+
+//   if (!weatherData) {
+//     return <p>Loading...</p>;
+//   }
+
+//   return <WeatherWidget city={city || 'Current Location'} weatherData={weatherData} />;
+// }

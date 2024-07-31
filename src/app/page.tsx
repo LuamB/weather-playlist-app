@@ -16,9 +16,6 @@ export default function Home() {
 		<div>
 			<WeatherFetcher city={selectedCity} />
 			<form onSubmit={handleSubmit} className="mt-4 text-center">
-				<label htmlFor="city" className="block text-lg mb-2">
-					Your city
-				</label>
 				<input
 					type="text"
 					id="city"
