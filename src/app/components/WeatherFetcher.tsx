@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import WeatherWidget from "./WeatherWidget";
-import { fetchCoords, fetchWeather } from "../utils/fetchers";
+import { fetchCoords, fetchWeather } from "../utils/fetcher";
+import { getCachedData, setCachedData } from "../utils/cache";
 
 interface WeatherFetcherProps {
 	city: string;
@@ -15,6 +16,12 @@ export default function WeatherFetcher({ city }: WeatherFetcherProps) {
 	useEffect(() => {
 		async function fetchWeatherData() {
 			try {
+				const cachedData = getCachedData(city);
+				if (cachedData) {
+					setWeatherData(cachedData);
+					return;
+				}
+
 				const coordsData = await fetchCoords(city || "berlin");
 				if (!coordsData || coordsData.length === 0) {
 					throw new Error("No coordinates found");
@@ -22,6 +29,7 @@ export default function WeatherFetcher({ city }: WeatherFetcherProps) {
 				const { lat, lon } = coordsData[0];
 				const weatherData = await fetchWeather(lat, lon);
 				setWeatherData(weatherData);
+				setCachedData(city, weatherData);
 			} catch (error) {
 				if (error instanceof Error) {
 					setError(error.message);

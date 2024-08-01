@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { fetchCoords } from "../../utils/fetcher";
 import axios from "axios";
 
 const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY;
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
 	const url = new URL(request.url);
 	const city = url.searchParams.get("city");
 
@@ -15,11 +16,8 @@ export async function GET(request: Request) {
 	}
 
 	try {
-		const response = await axios.get(
-			`http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
-				city
-			)}&limit=3&appid=${API_KEY}`
-		);
+		const coordsData = await fetchCoords(city as string);
+		return NextResponse.json(coordsData, { status: 200 });
 	} catch (error) {
 		console.error("Error fetching coordinates: ", error);
 		return NextResponse.json(
