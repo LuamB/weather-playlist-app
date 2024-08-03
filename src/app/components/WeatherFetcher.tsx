@@ -15,6 +15,9 @@ export default function WeatherFetcher({ city }: WeatherFetcherProps) {
 
 	useEffect(() => {
 		async function fetchWeatherData() {
+			// Reset states at the beginning of the fetch operation
+			setWeatherData(null);
+			setError(null);
 			try {
 				const cachedData = getCachedData(city);
 				if (cachedData) {
