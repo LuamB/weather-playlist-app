@@ -1,3 +1,4 @@
+// Handle caching
 const cache: { [key: string]: any } = {};
 
 export function getCachedData(key: string) {

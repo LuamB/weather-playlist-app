@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchWeather } from "../../utils/fetcher";
+import { fetchWeather } from "../../utils/weather";
 import axios from "axios";
 
 const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY;

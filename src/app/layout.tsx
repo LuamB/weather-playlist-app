@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
-import "./globals.css"; // Import global styles
+// src/app/layout.tsx
+import { Metadata } from "next";
+import React from "react";
 
 export const metadata: Metadata = {
-	title: "Weather App",
-	description: "A simple weather app using Next.js",
+	title: "WeMu App",
+	description:
+		"App that allows users to listen to music playlists, matching the current weather",
 };
 
 export default function RootLayout({
@@ -14,13 +16,93 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body>
-				<div className="flex flex-col items-center justify-center min-h-screen py-2">
+				<div className="app-layout">
+					{/* Common layout components like header, footer, etc. */}
 					{children}
 				</div>
 			</body>
 		</html>
 	);
 }
+
+// // src/app/layout.tsx
+// "use client";
+
+// import React, { Suspense } from "react";
+// import { Metadata } from "next";
+// import Error from "./api/error";
+// import Loading from "./api/loading";
+// import { ReactNode, useState, useEffect } from "react";
+
+// export const metadata: Metadata = {
+// 	title: "WeMu App",
+// 	description:
+// 		"App that allows users to listen to music playlists, matching the current weather",
+// };
+
+// interface ErrorBoundaryProps {
+// 	children: ReactNode;
+// }
+
+// function ErrorBoundary({ children }: ErrorBoundaryProps) {
+// 	const [hasError, setHasError] = useState(false);
+// 	const [error, setError] = useState<Error | null>(null);
+
+// 	useEffect(() => {
+// 		const handleError = (event: ErrorEvent) => {
+// 			setHasError(true);
+// 			setError(event.error);
+// 		};
+// 		window.addEventListener("error", handleError);
+// 		return () => {
+// 			window.removeEventListener("error", handleError);
+// 		};
+// 	}, []);
+
+// 	const resetErrorBoundary = () => {
+// 		setHasError(false);
+// 		setError(null);
+// 	};
+
+// 	if (hasError && error) {
+// 		return <Error error={error} reset={resetErrorBoundary} />;
+// 	}
+
+// 	return <>{children}</>;
+// }
+
+// export default function RootLayout({ children }: { children: ReactNode }) {
+// 	return (
+// 		<html lang="en">
+// 			<body>
+// 				<ErrorBoundary>
+// 					<Suspense fallback={<Loading />}>
+// 						<div className="app-layout">
+// 							{/* Common layout components like header, footer, etc. */}
+// 							{children}
+// 						</div>
+// 					</Suspense>
+// 				</ErrorBoundary>
+// 			</body>
+// 		</html>
+// 	);
+// }
+
+// export default function RootLayout({
+// 	children,
+// }: {
+// 	children: React.ReactNode;
+// }) {
+// 	return (
+// 		<html lang="en">
+// 			<body>
+// 				<div className="flex flex-col items-center justify-center min-h-screen py-2">
+// 					{children}
+// 				</div>
+// 			</body>
+// 		</html>
+// 	);
+// }
 
 // import type { Metadata } from "next";
 // import { Inter } from "next/font/google";
